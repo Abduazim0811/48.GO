@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 
-
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
@@ -51,6 +50,18 @@ func ConnectDB() (*sql.DB, error) {
 		return nil, err
 	}
 	log.Println("connection to the database has been created")
-	return psqlConn, nil
+	
 
+	_, err = psqlConn.Exec(`CREATE TABLE IF NOT EXISTS users (
+		id SERIAL PRIMARY KEY,
+		email VARCHAR(255) UNIQUE NOT NULL,
+		password TEXT NOT NULL,
+		created_at TIMESTAMP NOT NULL
+	);`)
+	if err != nil {
+		log.Fatal("Error creating users table: ", err)
+		return nil, err
+	}
+
+	return psqlConn, nil
 }
