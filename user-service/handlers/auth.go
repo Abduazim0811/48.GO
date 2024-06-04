@@ -35,11 +35,16 @@ func (h *Handler)RegisterUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	user.Password = string(hashed)
-	users[user.Email] = user
+	createuser, err:=h.Storage.CreateUser(user)
+	if err!=nil{
+		fmt.Println(err)
+		http.Error(w, "Failed to create user", http.StatusInternalServerError)
+		return
+	}
+	createuser.Password=string(hashed)
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(user)
+	json.NewEncoder(w).Encode(createuser)
 
 }
 
